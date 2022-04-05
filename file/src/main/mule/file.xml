@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<file:config name="File_Config" doc:name="File Config" doc:id="426ad4bc-9fb5-4c3c-88cf-a9c39ec85285" />
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="9cec9345-e53d-44ec-8be3-d9ddf949c9d6" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="200a8ab9-3e20-430a-abc7-e1f15fd62b35" >
+		<db:my-sql-connection host="localhost" port="3306" user="root" password="Deepu348@" database="student_db" />
+	</db:config>
+	<flow name="fileFlow" doc:id="3f0c6358-aa22-41d1-92c5-ca84844cd7cf" >
+		<http:listener doc:name="Listener" doc:id="0343ec5f-ad1d-4a51-b1db-dd6a128fb621" config-ref="HTTP_Listener_config" path="file"/>
+		<db:insert doc:name="Insert" doc:id="f53407e1-e682-40b7-bdeb-802bab6aec27" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into student_db.stu values (:studentid,:studentname,:studentage,:studentadd)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[payload]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Transform Message" doc:id="b1ca18ad-beb6-45fb-8596-725250ed0534" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "message": "Student created successfully"	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="fileFlow1" doc:id="eeedae26-beea-432e-abd3-7fc6f2654f2e" >
+		<http:listener doc:name="Listener" doc:id="8c5a75ad-d2a1-4045-8507-e73614c343b8" config-ref="HTTP_Listener_config" path="delete"/>
+		<db:delete doc:name="Delete" doc:id="1a980bdf-3f1b-45bb-a8a0-b7c5f7c2b043" config-ref="Database_Config">
+			<db:sql ><![CDATA[delete from student_db.stu where studentid= :studentid]]></db:sql>
+			<db:input-parameters ><![CDATA[#[payload]]]></db:input-parameters>
+		</db:delete>
+		<ee:transform doc:name="Transform Message" doc:id="262e8956-e0cd-4d09-bc4e-0944b9521264" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+ "message": "student record deleted successfully"	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="fileFlow2" doc:id="e7e1c434-be90-4b73-a0c8-62ad88d9e2e8" >
+		<http:listener doc:name="Listener" doc:id="092b796b-e595-479a-9f44-6fd3c6a805ca" config-ref="HTTP_Listener_config" path="bulk"/>
+		<db:bulk-insert doc:name="Bulk insert" doc:id="123bcaab-04a8-4ed8-ae0c-4ce574bb781b" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into student_db.stu values (:studentid,:studentname,:studentage,:studentadd)]]></db:sql>
+		</db:bulk-insert>
+		<ee:transform doc:name="Transform Message" doc:id="a6e695ef-b416-4acc-9dad-07da45c4a00c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+ "message": "Records created in bulk"	 
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="fileFlow3" doc:id="9e5a2105-5853-486f-ba7d-4e5e8d67e0e5" >
+		<http:listener doc:name="Listener" doc:id="7856d254-4934-4fb0-b6e0-353ddf46cc6b" config-ref="HTTP_Listener_config" path="bulkDelete"/>
+		<db:bulk-delete doc:name="Bulk delete" doc:id="fdfd7675-bc81-484b-90b8-2ba1d0fe9270" config-ref="Database_Config">
+			<db:sql ><![CDATA[delete from student_db.stu where studentid= :studentid]]></db:sql>
+		</db:bulk-delete>
+		<ee:transform doc:name="Transform Message" doc:id="069f474b-88ef-4f95-ac23-40ce133d75d9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+ "message": "Records deleted on bulk"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
