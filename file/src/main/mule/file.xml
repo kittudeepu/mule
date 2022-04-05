@@ -52,6 +52,7 @@ output application/json
 	</flow>
 	<sub-flow name="Sub_Flow" doc:id="18ccd87a-dad7-4fce-8d23-84fb7c41403f" >
 		<logger level="INFO" doc:name="Logger" doc:id="9692eb2e-7274-4fbf-9747-f4c5618d997f" message="Hey this is subflow"/>
+		<logger level="INFO" doc:name="Logger" doc:id="a99faef4-9cf8-4d24-9009-12f0fd7e9b10" message="how do you do"/>
 	</sub-flow>
 	<flow name="fileFlow2" doc:id="e7e1c434-be90-4b73-a0c8-62ad88d9e2e8" >
 		<http:listener doc:name="Listener" doc:id="092b796b-e595-479a-9f44-6fd3c6a805ca" config-ref="HTTP_Listener_config" path="bulk"/>
