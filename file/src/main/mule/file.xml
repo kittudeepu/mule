@@ -30,6 +30,8 @@ output application/json
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="d11039e1-0a79-48f4-a92d-c48f5d5c92ff" message="#[payload]"/>
+		<flow-ref doc:name="Flow Reference" doc:id="a2e1be78-7a99-4886-9356-aa08bfa23638" name="Sub_Flow"/>
 	</flow>
 	<flow name="fileFlow1" doc:id="eeedae26-beea-432e-abd3-7fc6f2654f2e" >
 		<http:listener doc:name="Listener" doc:id="8c5a75ad-d2a1-4045-8507-e73614c343b8" config-ref="HTTP_Listener_config" path="delete"/>
@@ -48,6 +50,9 @@ output application/json
 			</ee:message>
 		</ee:transform>
 	</flow>
+	<sub-flow name="Sub_Flow" doc:id="18ccd87a-dad7-4fce-8d23-84fb7c41403f" >
+		<logger level="INFO" doc:name="Logger" doc:id="9692eb2e-7274-4fbf-9747-f4c5618d997f" message="Hey this is subflow"/>
+	</sub-flow>
 	<flow name="fileFlow2" doc:id="e7e1c434-be90-4b73-a0c8-62ad88d9e2e8" >
 		<http:listener doc:name="Listener" doc:id="092b796b-e595-479a-9f44-6fd3c6a805ca" config-ref="HTTP_Listener_config" path="bulk"/>
 		<db:bulk-insert doc:name="Bulk insert" doc:id="123bcaab-04a8-4ed8-ae0c-4ce574bb781b" config-ref="Database_Config">
